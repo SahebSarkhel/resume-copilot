@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume Copilot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FAF8F3;
+    --paper-dim: #F0ECE1;
+    --ink: #1B2A41;
+    --ink-soft: #4A5A72;
+    --amber: #C77D2E;
+    --sage: #5C7A5C;
+    --clay: #B5533C;
+    --rule: #D9D2C0;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 2rem 3rem 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.4rem;
+  }
+
+  h1 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700;
+    font-size: 2.1rem;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .subhead {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    margin-top: 0.5rem;
+    max-width: 46ch;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - 130px);
+  }
+
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    padding: 2.5rem 3rem;
+  }
+
+  .intake {
+    border-right: 1px solid var(--rule);
+  }
+
+  .field-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .field {
+    margin-bottom: 1.75rem;
+  }
+
+  .upload-box {
+    border: 1.5px dashed var(--rule);
+    border-radius: 4px;
+    padding: 1.5rem;
+    text-align: center;
+    background: var(--paper-dim);
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+    position: relative;
+  }
+
+  .upload-box:hover, .upload-box.dragover {
+    border-color: var(--amber);
+  }
+
+  .upload-box input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .upload-box .filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--ink);
+  }
+
+  .upload-box .hint {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 180px;
+    resize: vertical;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--paper-dim);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    padding: 0.9rem;
+    line-height: 1.5;
+  }
+
+  textarea:focus, .upload-box:focus-within {
+    outline: 2px solid var(--amber);
+    outline-offset: 1px;
+  }
+
+  button.submit {
+    width: 100%;
+    padding: 0.85rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  button.submit:hover:not(:disabled) {
+    background: var(--amber);
+  }
+
+  button.submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .review {
+    background: var(--paper);
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    height: 100%;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    max-width: 32ch;
+  }
+
+  .empty-state .mark {
+    font-family: 'Source Serif 4', serif;
+    font-size: 3rem;
+    color: var(--rule);
+    margin-bottom: 0.5rem;
+  }
+
+  .score-seal {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 128px;
+    height: 128px;
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    transform: rotate(-4deg);
+    margin-bottom: 0.5rem;
+  }
+
+  .score-seal .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 2.1rem;
+    line-height: 1;
+  }
+
+  .score-seal .pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-soft);
+    margin-top: 0.15rem;
+  }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .category-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .category-tag .value {
+    display: block;
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.3rem;
+    color: var(--ink);
+    text-transform: none;
+    letter-spacing: normal;
+    margin-top: 0.15rem;
+  }
+
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 1.75rem 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-title.strengths { color: var(--sage); }
+  .section-title.gaps { color: var(--clay); }
+  .section-title.suggestions { color: var(--amber); }
+
+  .section-title::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    display: inline-block;
+  }
+
+  ul.notes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  ul.notes li {
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  ul.notes li:last-child { border-bottom: none; }
+
+  .loading {
+    color: var(--ink-soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+  }
+
+  .error-box {
+    border: 1px solid var(--clay);
+    background: rgba(181, 83, 60, 0.08);
+    color: var(--clay);
+    padding: 1rem 1.25rem;
+    border-radius: 4px;
+    font-size: 0.88rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Resume Copilot</div>
+  <h1>Read like the recruiter will.</h1>
+  <p class="subhead">Upload a resume and a job description. Get a match score, an ML-predicted category, and a structured critique.</p>
+</header>
+
+<main>
+  <section class="panel intake">
+    <div class="field">
+      <label class="field-label" for="resume-input">Resume (PDF)</label>
+      <div class="upload-box" id="upload-box">
+        <input type="file" id="resume-input" accept="application/pdf">
+        <div id="upload-text">
+          <div class="filename">Choose a file</div>
+          <div class="hint">or drag one here</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="jd-input">Target job description</label>
+      <textarea id="jd-input" placeholder="Paste the job description here..."></textarea>
+    </div>
+
+    <button class="submit" id="submit-btn">Analyze resume</button>
+  </section>
+
+  <section class="panel review" id="review-panel">
+    <div class="empty-state">
+      <div class="mark">§</div>
+      <p>Your review will appear here once you upload a resume and a job description.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+  const API_URL = "http://127.0.0.1:8000/analyze";
+
+  const fileInput = document.getElementById("resume-input");
+  const uploadBox = document.getElementById("upload-box");
+  const uploadText = document.getElementById("upload-text");
+  const jdInput = document.getElementById("jd-input");
+  const submitBtn = document.getElementById("submit-btn");
+  const reviewPanel = document.getElementById("review-panel");
+
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files.length > 0) {
+      uploadText.innerHTML = `<div class="filename">${fileInput.files[0].name}</div><div class="hint">Click to change</div>`;
+    }
+  });
+
+  ["dragover", "dragleave", "drop"].forEach(evt => {
+    uploadBox.addEventListener(evt, (e) => {
+      e.preventDefault();
+      uploadBox.classList.toggle("dragover", evt === "dragover");
+    });
+  });
+
+  uploadBox.addEventListener("drop", (e) => {
+    if (e.dataTransfer.files.length > 0) {
+      fileInput.files = e.dataTransfer.files;
+      uploadText.innerHTML = `<div class="filename">${e.dataTransfer.files[0].name}</div><div class="hint">Click to change</div>`;
+    }
+  });
+
+  function renderList(items) {
+    return items.map(item => `<li>${item}</li>`).join("");
+  }
+
+  submitBtn.addEventListener("click", async () => {
+    const file = fileInput.files[0];
+    const jobDescription = jdInput.value.trim();
+
+    if (!file) {
+      reviewPanel.innerHTML = `<div class="error-box">Choose a resume PDF first.</div>`;
+      return;
+    }
+    if (!jobDescription) {
+      reviewPanel.innerHTML = `<div class="error-box">Paste a job description first.</div>`;
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Analyzing...";
+    reviewPanel.innerHTML = `<div class="loading">Parsing resume, scoring match, and generating critique...</div>`;
+
+    const formData = new FormData();
+    formData.append("resume_pdf", file);
+    formData.append("job_description", jobDescription);
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody.detail || `Request failed (${response.status})`);
+      }
+
+      const data = await response.json();
+
+      reviewPanel.innerHTML = `
+        <div class="score-row">
+          <div class="score-seal">
+            <div class="num">${Math.round(data.match_score)}</div>
+            <div class="pct">/ 100</div>
+          </div>
+          <div class="category-tag">
+            Predicted category
+            <span class="value">${data.predicted_category}</span>
+          </div>
+        </div>
+
+        <div class="section-title strengths">Strengths</div>
+        <ul class="notes">${renderList(data.strengths)}</ul>
+
+        <div class="section-title gaps">Gaps</div>
+        <ul class="notes">${renderList(data.gaps)}</ul>
+
+        <div class="section-title suggestions">Suggestions</div>
+        <ul class="notes">${renderList(data.suggestions)}</ul>
+      `;
+    } catch (err) {
+      reviewPanel.innerHTML = `<div class="error-box">Something went wrong: ${err.message}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Analyze resume";
+    }
+  });
+</script>
+
+</body>
+</html>

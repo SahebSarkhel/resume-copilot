@@ -1,0 +1,26 @@
+# Environments
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Secrets
+.env
+*.key
+
+# Data (large / raw datasets shouldn't go in git)
+data/*
+!data/.gitkeep
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# OS/editor
+.DS_Store
+.vscode/settings.json
+
+# Build artifacts
+*.egg-info/
+dist/
+build/

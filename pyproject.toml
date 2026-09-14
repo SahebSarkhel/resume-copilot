@@ -1,0 +1,29 @@
+[project]
+name = "resume-copilot"
+version = "0.1.0"
+description = "AI Resume Copilot: ML scoring + GenAI critique + agentic improvement loop"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8",
+    "python-multipart>=0.0.9",
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "scikit-learn>=1.5",
+    "sentence-transformers>=3.0",
+    "pdfplumber>=0.11",
+    "python-docx>=1.1",
+    "python-dotenv>=1.0",
+    "google-genai>=0.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyter>=1.0",
+    "matplotlib>=3.9",
+    "seaborn>=0.13",
+]
+
+[tool.uv]
+package = false
